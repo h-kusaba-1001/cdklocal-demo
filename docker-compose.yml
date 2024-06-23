@@ -1,0 +1,23 @@
+services:
+    localstack:
+        container_name: localstack
+        build:
+            context: ./localstack
+            dockerfile: ./Dockerfile
+        ports:
+            - 4566:4566
+            - 4510-4559:4510-4559
+        environment:
+            - AWS_DEFAULT_REGION=ap-northeast-1
+            - PERSISTENCE=1
+            - DEBUG=1
+        volumes:
+            # boot時、起動時に、boot.sh, init-aws.sh の実行を指定
+            # boot
+            - "./localstack/hooks/boot.sh:/etc/localstack/init/boot.d/boot.sh"
+            # ready
+            - "./localstack/hooks/init-aws.sh:/etc/localstack/init/ready.d/init-aws.sh"
+            # CDKのディレクトリをマウント
+            - "./cdk:/opt/code/localstack/cdk"
+            - ./localstack/volume:/var/lib/localstack
+            - "/var/run/docker.sock:/var/run/docker.sock"
